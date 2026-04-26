@@ -5,7 +5,6 @@ import './App.css';
 import LogIn from './Components/Login';
 import { Route, Routes } from 'react-router-dom';
 import Welcome from './Components/welcome';
-import Users_Groups from './Components/Users_Groups';
 import Users from './Components/Users';
 import CreateGroup from './Components/createGroups';
 import Chatarea from './Components/ChatArea';

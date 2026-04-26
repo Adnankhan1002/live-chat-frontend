@@ -1,8 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import rough from 'roughjs/bin/rough';
 
-const roughGenerator = rough.generator();
-
 const CanvasBoard = ({ canvasRef, ctxRef, elements, setElements, tool, color }) => {
   const [isDrawing, setIsDrawing] = useState(false);
 
@@ -14,14 +12,13 @@ const CanvasBoard = ({ canvasRef, ctxRef, elements, setElements, tool, color }) 
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-  }, []);
+  }, [canvasRef, ctxRef]);
 
   // Redraw elements whenever they change
   useLayoutEffect(() => {
     if (!canvasRef.current || !Array.isArray(elements)) return;
 
     const canvas = canvasRef.current;
-    const ctx = ctxRef.current;
     const roughCanvas = rough.canvas(canvas);
 
     // Clear canvas before redrawing
@@ -34,7 +31,7 @@ const CanvasBoard = ({ canvasRef, ctxRef, elements, setElements, tool, color }) 
       });
       roughCanvas.draw(drawing);
     });
-  }, [elements]);
+  }, [elements, canvasRef, ctxRef]);
 
   // Start drawing
   const handleMouseDown = (e) => {

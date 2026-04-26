@@ -4,14 +4,9 @@ import { IconButton } from '@mui/material';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import NightlightIcon from '@mui/icons-material/Nightlight';
-import LightModeIcon from '@mui/icons-material/LightMode';
 import SearchIcon from '@mui/icons-material/Search';
-import LogoutIcon from '@mui/icons-material/Logout';
 import AddIcon from '@mui/icons-material/Add';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { changeTheme } from '../Features/themeSlice';
-import {useDispatch, useSelector} from "react-redux";
 import axios from 'axios';
 import { myContext } from './MainContainer';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -19,8 +14,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 function Sidebar() {
  
-  const dispatch = useDispatch();
-  const lightTheme=(useSelector((state)=>state.themeKey));
   const [conversations ,setConversations] = useState([]);
   const Navigate= useNavigate();
   const location = useLocation();

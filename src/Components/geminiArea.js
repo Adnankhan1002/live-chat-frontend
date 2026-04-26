@@ -5,7 +5,7 @@ import { myContext } from './MainContainer';
 import {useSelector} from 'react-redux'
 function Query() {
     const [data, setData] = useState(null);
-   const { refresh, setRefresh } = useContext(myContext);
+  const { refresh } = useContext(myContext);
    const lightTheme=(useSelector((state)=>state.themeKey));
   
     useEffect(() => {

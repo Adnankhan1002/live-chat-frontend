@@ -1,21 +1,17 @@
 import React, { useState,useRef,useContext,useEffect } from 'react'
 import './myStyle.css'
 import { IconButton } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send'
-import SearchIcon from '@mui/icons-material/Search'
 import VideocamIcon from '@mui/icons-material/Videocam';
 import CallIcon from '@mui/icons-material/Call';
 import MessageSelf from './Selfmessage'
 import MessageOthers from './Othermessage';
-import { useSelector } from 'react-redux';
 import { useParams } from "react-router-dom";
 import Skeleton from "@mui/material/Skeleton";
 import axios from "axios";
 import { myContext } from "./MainContainer";
 import { useNavigate } from "react-router-dom";
-import {io} from "socket.io-client"
 import VideoCall from './VideoCall';
 import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
 import CallEndIcon from "@mui/icons-material/CallEnd";
@@ -35,22 +31,20 @@ function Chatarea() {
   const [aiResponse, setAiResponse] = useState("");
   const [genText, setGenText] = useState(true);
   const [genImage, setGenImage] = useState(false);
-  const lightTheme = (useSelector((state)=>state.themeKey));
   const [messageContent, setMessageContent] = useState("");
   const messagesEndRef = useRef(null);
   const dyParams = useParams();
   const [chat_id, chat_user] = dyParams._id.split("&");
-  const [conversations ,setConversations] = useState([]);
    
   const userData = JSON.parse(localStorage.getItem("userData"));
+  const authToken = userData?.data?.token;
   
   const [allMessages, setAllMessages] = useState([]);
   const [isGroupChat, setIsGroupChat] = useState(false);
   // console.log("Chat area id : ", chat_id._id);
   // const refresh = useSelector((state) => state.refreshKey);
-  const { refresh, setRefresh, socket } = useContext(myContext);
+  const { setRefresh, socket } = useContext(myContext);
   const [loaded, setloaded] = useState(false);
-  const[showMembers, setShowMembers] = useState(false);
   const [callActive, setCallActive] = useState(false);
   const [isAudioOnlyCall, setIsAudioOnlyCall] = useState(false);
   const [incomingOffer, setIncomingOffer] = useState(null);
@@ -99,7 +93,7 @@ function Chatarea() {
       }
     }
   
-  },[])
+  }, [socket, callActive, incomingCallData, chat_user])
 
   
   
@@ -111,7 +105,7 @@ function Chatarea() {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${userData.data.token}`,
+        Authorization: `Bearer ${authToken}`,
       },
     }
 
@@ -170,7 +164,7 @@ useEffect(() => {
     console.log("Users refreshed");
     const config = {
       headers: {
-        Authorization: `Bearer ${userData.data.token}`,
+        Authorization: `Bearer ${authToken}`,
       },
     };
     axios
@@ -195,7 +189,7 @@ useEffect(() => {
         socketRef.current.emit("leave chat", activeChatRef.current);
       }
     };
-  }, [chat_id]);
+  }, [chat_id, authToken]);
 
   //toggle modal
   const toggleModal = () => {
@@ -203,37 +197,6 @@ useEffect(() => {
     
     setAiResponse(""); // Clear AI response when opening modal
   };
-  const toggleMembers = ()=>{
-    setShowMembers(!showMembers);
-  }
-  //show members
-  const showMem = ()=>{
-   console.log("show mem is called");
-      const config = {
-        headers : {
-          Authorization : `Bearer ${userData.data.token}`
-        }
-      }
-      
-      axios.get('http://localhost:5050/chat/fetch',config).then((response)=>{
-        console.log('get is called in showmem');
-        
-        console.log( "test res 2nd ",response.data)
-        
-        setConversations(response.data);
-       
-        
-        
-      });
-    
-   
-      
-      
-    
-    
-  }
-  
-    
   //fetch ai data
   const askAI= async() => {
    
@@ -256,7 +219,7 @@ useEffect(() => {
       try {
         const config = {
           headers: {
-            Authorization: `Bearer ${userData.data.token}`,
+            Authorization: `Bearer ${authToken}`,
           },
         };
           await axios.delete(`http://localhost:5050/chat/delete/${chat_id}`,config);
@@ -272,10 +235,10 @@ useEffect(() => {
     try{
       const config = {
         headers: {
-          Authorization: `Bearer ${userData.data.token}`,
+          Authorization: `Bearer ${authToken}`,
         },
       };
-     const res =  await axios.get(`http://localhost:5050/chat/exit/${chat_id}`,config);
+      await axios.get(`http://localhost:5050/chat/exit/${chat_id}`,config);
        setRefresh(prev => !prev);
      navigate('/app/welcome');
       

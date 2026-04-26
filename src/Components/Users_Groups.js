@@ -9,7 +9,7 @@ function Users_Groups() {
   return (
     <div className='flex flex-col w-3/4'>
       <div class="ug-header" className= { "w-full h-14  rounded-xl mx-1 mt-2 border-black flex justify-center " + (lightTheme ? " bg-white" : "dark ")} >
-        <img src={logo} className='h-7 w-7 mt-1'></img>
+        <img src={logo} alt="Online users" className='h-7 w-7 mt-1'></img>
         <h1 className={'text-2xl font-bold p-1 text-center '+ (lightTheme? "text-black" : "text-white")} >
           Online Users
         </h1>

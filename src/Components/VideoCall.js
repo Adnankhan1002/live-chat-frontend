@@ -10,14 +10,32 @@ const VideoCall = ({ socket, roomId, isAudioOnly, incomingOffer, callerName, onC
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  const incomingOfferRef = useRef(incomingOffer);
+  const callerNameRef = useRef(callerName);
   
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(isAudioOnly);
   const [callStatus, setCallStatus] = useState(incomingOffer ? "Connecting..." : "Calling...");
 
   useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    incomingOfferRef.current = incomingOffer;
+  }, [incomingOffer]);
+
+  useEffect(() => {
+    callerNameRef.current = callerName;
+  }, [callerName]);
+
+  useEffect(() => {
     // Only configure peer connection if socket is verified alive
     if (!socket) return;
+
+    const localVideoElement = localVideoRef.current;
+    const remoteVideoElement = remoteVideoRef.current;
 
     const pc = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
@@ -33,8 +51,8 @@ const VideoCall = ({ socket, roomId, isAudioOnly, incomingOffer, callerName, onC
           audio: true,
         });
 
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
+        if (localVideoElement) {
+          localVideoElement.srcObject = stream;
         }
 
         stream.getTracks().forEach((track) => {
@@ -48,16 +66,16 @@ const VideoCall = ({ socket, roomId, isAudioOnly, incomingOffer, callerName, onC
         };
 
         pc.ontrack = (event) => {
-          if (remoteVideoRef.current) {
-            remoteVideoRef.current.srcObject = event.streams[0];
+          if (remoteVideoElement) {
+            remoteVideoElement.srcObject = event.streams[0];
             setCallStatus("Connected");
           }
         };
 
-        if (incomingOffer) {
+        if (incomingOfferRef.current) {
           // Receiver logic
           setCallStatus("Answering...");
-          await pc.setRemoteDescription(incomingOffer);
+          await pc.setRemoteDescription(incomingOfferRef.current);
           
           while (iceCandidateQueue.length > 0) {
             await pc.addIceCandidate(iceCandidateQueue.shift());
@@ -70,7 +88,7 @@ const VideoCall = ({ socket, roomId, isAudioOnly, incomingOffer, callerName, onC
           // Caller logic
           const offer = await pc.createOffer();
           await pc.setLocalDescription(offer);
-          socket.emit("offer", { offer, roomId, isAudioOnly, callerName });
+          socket.emit("offer", { offer, roomId, isAudioOnly, callerName: callerNameRef.current });
         }
 
       } catch (err) {
@@ -92,7 +110,7 @@ const VideoCall = ({ socket, roomId, isAudioOnly, incomingOffer, callerName, onC
 
     socket.on("call-rejected", () => {
       setCallStatus("Call Rejected");
-      setTimeout(onClose, 2000);
+      setTimeout(() => onCloseRef.current?.(), 2000);
     });
 
     socket.on("ice-candidate", async (candidate) => {
@@ -117,8 +135,8 @@ const VideoCall = ({ socket, roomId, isAudioOnly, incomingOffer, callerName, onC
       socket.off("call-rejected");
       
       // Clean up local media tracks
-      if (localVideoRef.current && localVideoRef.current.srcObject) {
-         localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      if (localVideoElement && localVideoElement.srcObject) {
+         localVideoElement.srcObject.getTracks().forEach(track => track.stop());
       }
       
       // Clean up peer connection
