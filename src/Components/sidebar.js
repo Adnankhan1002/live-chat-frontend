@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { myContext } from './MainContainer';
 import { AnimatePresence, motion } from 'framer-motion';
+import { apiUrl } from '../config/api';
 
 
 function Sidebar() {
@@ -59,7 +60,7 @@ useEffect(()=>{
     }
   }
   
-  axios.get('http://localhost:5050/chat/fetch',config).then((response)=>{
+  axios.get(apiUrl('/chat/fetch'),config).then((response)=>{
     console.log( "test res",response)
     
     setConversations(response.data)

@@ -3,6 +3,7 @@ import logo from "../Images/live-chat-logo.png";
 import axios from "axios";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../config/api";
 
 function LogIn() {
   const [showLogin, setShowLogin] = useState(true);
@@ -21,7 +22,7 @@ function LogIn() {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:5050/user/login",
+        apiUrl("/user/login"),
         {
           name: data.name,
           password: data.password,
@@ -42,7 +43,7 @@ function LogIn() {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:5050/user/register",
+        apiUrl("/user/register"),
         data,
         { headers: { "Content-Type": "application/json" } }
       );

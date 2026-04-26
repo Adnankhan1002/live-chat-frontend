@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../config/api";
  
 import { refreshSidebarFun } from "../Features/refreshSidebar";
 import { myContext } from "./MainContainer";
@@ -36,7 +37,7 @@ function Users() {
         Authorization: `Bearer ${userData.data.token} `,
       },
     };
-    axios.get("http://localhost:5050/user/fetchUsers", config).then((data) => {
+    axios.get(apiUrl("/user/fetchUsers"), config).then((data) => {
       console.log("UData refreshed in Users panel ");
       setUsers(data.data);
     });
@@ -142,7 +143,7 @@ function Users() {
                       onClick={async () => {
                         const config = { headers: { Authorization: `Bearer ${userData.data.token}` } };
                         try {
-                          const { data } = await axios.post("http://localhost:5050/chat/access", { userId: user._id }, config);
+                          const { data } = await axios.post(apiUrl("/chat/access"), { userId: user._id }, config);
                           dispatch(refreshSidebarFun());
                           setRefresh(!refresh);
                           navigate(`/app/chat/${data._id}&${user.name}`);

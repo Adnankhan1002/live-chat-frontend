@@ -7,6 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../config/api";
 function CreateGroups(){
   const navigate = useNavigate()
     
@@ -30,7 +31,7 @@ function CreateGroups(){
       }
     }
   
-      axios.post('http://localhost:5050/chat/createGroup',
+      axios.post(apiUrl('/chat/createGroup'),
         {
             name: groupName, 
             users: ["675eabdc98f9525a9ad613d1","675eaa66a40291da9783b359"]

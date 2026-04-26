@@ -4,11 +4,12 @@ import Sidebar from './sidebar';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { AnimatePresence, motion } from "framer-motion";
+import { SOCKET_URL } from '../config/api';
 
 export const myContext = createContext();
 
 // Create a single global socket instance outside the component
-const socket = io("http://localhost:5050", { autoConnect: false });
+const socket = io(SOCKET_URL, { autoConnect: false });
 
 function MainContainer() {
   const [refresh, setRefresh] = useState(true);

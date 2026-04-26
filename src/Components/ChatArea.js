@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import VideoCall from './VideoCall';
 import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
 import CallEndIcon from "@mui/icons-material/CallEnd";
+import { apiUrl } from '../config/api';
 
 
 
@@ -111,7 +112,7 @@ function Chatarea() {
 
     try {
       const response = await axios.post(
-        'http://localhost:5050/message/',
+        apiUrl('/message/'),
         {
           chatId: chat_id,
           text: trimmedMessage,
@@ -168,7 +169,7 @@ useEffect(() => {
       },
     };
     axios
-      .get("http://localhost:5050/message/" +chat_id, config)
+      .get(apiUrl(`/message/${chat_id}`), config)
       .then(({ data }) => {
        
         setAllMessages(data);
@@ -176,7 +177,7 @@ useEffect(() => {
       });
 
       axios
-        .get("http://localhost:5050/chat/fetch/" +chat_id, config)
+        .get(apiUrl(`/chat/fetch/${chat_id}`), config)
         .then(({ data }) => {
           setIsGroupChat(data.isGroupChat);
         }).catch(err => console.log("Error fetching chat info", err));
@@ -202,7 +203,7 @@ useEffect(() => {
    
       try {
         setLoading(true);
-        const response = await axios.post('http://localhost:5050/api/Gemini',{
+        const response = await axios.post(apiUrl('/api/Gemini'),{
            generateText: genText,
            generateImage: genImage,
          content : question 
@@ -222,7 +223,7 @@ useEffect(() => {
             Authorization: `Bearer ${authToken}`,
           },
         };
-          await axios.delete(`http://localhost:5050/chat/delete/${chat_id}`,config);
+          await axios.delete(apiUrl(`/chat/delete/${chat_id}`),config);
           setRefresh(prev => !prev);
           
           navigate('/app/welcome');
@@ -238,7 +239,7 @@ useEffect(() => {
           Authorization: `Bearer ${authToken}`,
         },
       };
-      await axios.get(`http://localhost:5050/chat/exit/${chat_id}`,config);
+      await axios.get(apiUrl(`/chat/exit/${chat_id}`),config);
        setRefresh(prev => !prev);
      navigate('/app/welcome');
       

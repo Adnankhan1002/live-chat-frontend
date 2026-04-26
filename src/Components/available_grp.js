@@ -6,6 +6,7 @@ import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../config/api";
 
 let cachedGroups = null;
 let cachedGroupsToken = "";
@@ -89,7 +90,7 @@ function AvailGroups() {
       },
     };
 
-    const response = await axios.get("http://localhost:5050/chat/fetchGroup", config);
+    const response = await axios.get(apiUrl("/chat/fetchGroup"), config);
     cachedGroups = response.data;
     cachedGroupsToken = authToken;
     setGroups(response.data);
@@ -209,7 +210,7 @@ function AvailGroups() {
                           onClick={() => {
                             const config = { headers: { Authorization: `Bearer ${authToken}` } };
                             axios.put(
-                              "http://localhost:5050/chat/joinGroup",
+                              apiUrl("/chat/joinGroup"),
                               { groupId: group._id },
                               config
                             ).then(() => {
